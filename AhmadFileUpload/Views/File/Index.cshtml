@@ -1,0 +1,81 @@
+﻿@model AhmadFileUpload.Models.ViewModels.FileUploadViewModel
+@{
+    ViewData["Title"] = "Uploading User Documets";
+    if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissible" style="margin-top:20px">
+            @ViewBag.Message
+        </div>
+    }
+}
+
+<h2> Members Documents Upload</h2>
+<hr />
+
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="form-group">
+                @*<label asp-for="" class="control-label"></label>*@
+                <input type="file" name="incomingFiles" multiple required class="form-control" />
+                <input type="text" placeholder="Enter File Description" name="description" required />
+                <input type="text" placeholder="Document Owner" name="UploadedBy" required />
+                @*<span asp-validation-for="FileOfflines" class="text-danger"></span>*@
+                <div>
+
+                    <button class="btn btn-dark" type="submit" asp-controller="File" asp-action="FileOnlineAction">Online Upload</button>
+                    <button type="submit" class="btn btn-danger " asp-controller="File" asp-action="FileOfflineAction">Offline Upload</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row ">
+    <hr />
+    <h3>Available Files</h3>
+    @if (Model.FileOfflines.Count == 0)
+    {
+        <caption>File Not Available.</caption>
+    }
+    else
+    {
+        <caption>List of AVailable Files</caption>
+        <table class="table table-bordered ">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>File Type</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.FileOfflines)
+                {
+                    <tr>
+                        <th>@item.Id</th>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.FileType</td>
+                        <td>@item.CreatedOn</td>
+                        <td>
+                            <a type="button" class="btn btn-success " asp-controller="File" asp-action="DownloadOfflineFile" asp-route-id="@item.Id">Download</a>
+                            <a type="button" class="btn btn-danger" asp-controller="File" asp-action="DeleteOfflineFile" asp-route-id="@item.Id">Remove</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+
+@*
+    @using (Html.BeginForm("FileOffline", "FileOnline"))
+    {
+
+    }*@
