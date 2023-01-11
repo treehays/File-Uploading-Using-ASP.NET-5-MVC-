@@ -32,44 +32,95 @@
         </form>
     </div>
 </div>
+
+<hr />
+
 <div class="row ">
     <hr />
-    <h3>Available Files</h3>
+    <h3>Online Available Files</h3>
+    @if (Model.FileOnlines.Count == 0)
+    {
+        <caption>File Not Available.</caption>
+    }
+    else
+    {
+        <div class=" col-md-10 ">
+            <caption>List of Online AVailable Files</caption>
+            <table class="table table-bordered ">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>File Type</th>
+                        <th>Created On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.FileOnlines)
+                    {
+                        <tr>
+                            <th>@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>@item.FileType</td>
+                            <td>@item.CreatedOn</td>
+                            <td>
+                                <a type="button" class="btn btn-success " asp-controller="File" asp-action="DownloadOnlineFile" asp-route-id="@item.Id">Download </a> ||
+                                <a type="button" class="btn btn-info " asp-controller="File" asp-action="DownloadOnlineFile" asp-route-id="@item.Id">Rename File </a> ||
+                                <a type="button" class="btn btn-danger" asp-controller="File" asp-action="DeleteFileOnline" asp-route-id="@item.Id">Remove</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+
+<div class="row ">
+    <hr />
+    <h3>Offline Available Files</h3>
     @if (Model.FileOfflines.Count == 0)
     {
         <caption>File Not Available.</caption>
     }
     else
     {
-        <caption>List of AVailable Files</caption>
-        <table class="table table-bordered ">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>File Type</th>
-                    <th>Created On</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.FileOfflines)
-                {
+        <div class=" col-md-10 ">
+            <caption>List of AVailable Offline Files</caption>
+            <table class="table table-bordered ">
+                <thead>
                     <tr>
-                        <th>@item.Id</th>
-                        <td>@item.Name</td>
-                        <td>@item.Description</td>
-                        <td>@item.FileType</td>
-                        <td>@item.CreatedOn</td>
-                        <td>
-                            <a type="button" class="btn btn-success " asp-controller="File" asp-action="DownloadOfflineFile" asp-route-id="@item.Id">Download</a>
-                            <a type="button" class="btn btn-danger" asp-controller="File" asp-action="DeleteOfflineFile" asp-route-id="@item.Id">Remove</a>
-                        </td>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>File Type</th>
+                        <th>Created On</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.FileOfflines)
+                    {
+                        <tr>
+                            <th>@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>@item.FileType</td>
+                            <td>@item.CreatedOn</td>
+                            <td>
+                                <a type="button" class="btn btn-success " asp-controller="File" asp-action="DownloadOfflineFile" asp-route-id="@item.Id">Download </a> ||
+                                <a type="button" class="btn btn-info " asp-controller="File" asp-action="DownloadOfflineFile" asp-route-id="@item.Id">Rename File </a> ||
+                                <a type="button" class="btn btn-danger" asp-controller="File" asp-action="DeleteOfflineFile" asp-route-id="@item.Id">Remove</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </div>
 

@@ -53,7 +53,7 @@ namespace AhmadFileUpload.Controllers
                         CreatedOn = DateTime.Now,
                         FileType = item.ContentType,
                         Extension = extension,
-                        Name = fileName,
+                        Name = fileName.Length > 10 ? fileName.Remove(9) + DateTime.Now.ToLongDateString().Replace(" ", "") : fileName + DateTime.Now.ToLongDateString().Replace(" ", "").Replace(",",""),
                         Description = description,
                         FilePath = filePath,
                         UploadedBy = UploadedBy
@@ -65,6 +65,38 @@ namespace AhmadFileUpload.Controllers
             TempData["Message"] = "File Uploaded successfully.";
             return RedirectToAction("Index");
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> FileOnlineAction(List<IFormFile> incomingFiles, string description, string UploadedBy)
+        {
+            foreach (var file in incomingFiles)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                var extension = Path.GetExtension(file.FileName);
+                var fileModel = new FileOnline
+                {
+                    CreatedOn = DateTime.UtcNow,
+                    FileType = file.ContentType,
+                    Extension = extension,
+                    Name = fileName.Length > 10 ? fileName.Remove(9) + DateTime.Now.ToLongDateString().Replace(" ", "") : fileName + DateTime.Now.ToLongDateString().Replace(" ", "").Replace(",", ""),
+                    Description = description,
+                    UploadedBy = UploadedBy,
+                };
+                using (var dataStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(dataStream);
+                    fileModel.Data = dataStream.ToArray();
+                }
+                _contex.FileOnlines.Add(fileModel);
+                _contex.SaveChanges();
+            }
+            TempData["Message"] = "File Uploaded successfully.";
+            return RedirectToAction("Index");
+        }
+
+
 
         //downloding action
         public async Task<IActionResult> DownloadOfflineFile(int id)
@@ -80,6 +112,26 @@ namespace AhmadFileUpload.Controllers
             return File(memory, file.FileType, file.Name + file.Extension);
         }
 
+        //download from database
+        public async Task<IActionResult> DownloadOnlineFile(int id)
+        {
+            var file = await _contex.FileOnlines.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (file == null) return null;
+            return File(file.Data, file.FileType, file.Name + file.Extension);
+        }
+
+
+        //delete from database
+        public async Task<IActionResult> DeleteFileOnline(int id)
+        {
+            var file = await _contex.FileOnlines.Where(x => x.Id == id).FirstOrDefaultAsync();
+            _contex.FileOnlines.Remove(file);
+            _contex.SaveChanges();
+            TempData["Message"] = $"Removed {file.Name + file.Extension} successfully from Database.";
+            return RedirectToAction("Index");
+        }
+
+        //delete from pc
         public async Task<IActionResult> DeleteOfflineFile(int id)
         {
             var file = await _contex.FileOfflines.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -93,7 +145,6 @@ namespace AhmadFileUpload.Controllers
             TempData["Message"] = $"Removed {file.Name + file.Extension} successfully from File System.";
             return RedirectToAction("Index");
         }
-
 
 
         //This will be refactor late
